@@ -1,4 +1,4 @@
-name: Node.js Action
+name: Node.js with FFmpeg Action
 
 on:
   schedule:
@@ -18,10 +18,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'  # Ganti dengan versi Node.js yang diinginkan
+          node-version: '20'  # Versi terbaru Node.js
+
+      - name: Install FFmpeg
+        run: sudo apt-get install -y ffmpeg
 
       - name: Install dependencies
         run: npm install
 
       - name: Run application
-        run: npm start  # Atau ganti dengan perintah yang sesuai
+        run: npm start  # Ganti dengan perintah yang sesuai
