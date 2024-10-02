@@ -182,11 +182,13 @@ const startSock = async () => {
     mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
 
     const m = await serialize(hisoka, mek, store);
+    
+    // Pastikan m dan m.key ada
+    if (!m || !m.key) return;
+
     const me = m.key.remoteJid;
 
     if (
-        m &&
-        m.key &&
         m.sender !== me &&
         m.type !== 'protocolMessage' &&
         m.type !== 'reactionMessage' &&
@@ -194,10 +196,10 @@ const startSock = async () => {
     ) {
         return Promise.all([
             hisoka.readMessages([m.key]),
-            console.log("SYSTEM: " + "Berhasil melihat status dan reaction nomor: " + m.key.participant),
+            console.log("SYSTEM: " + "Berhasil melihat status dan reaction nomor: " + (m.key.participant || 'unknown')),
             hisoka.sendMessage(m.key.remoteJid, {
                 react: {
-                    text: "😳",
+                    text: "😮",
                     key: m.key
                 }
             }, {
