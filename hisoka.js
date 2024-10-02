@@ -194,7 +194,7 @@ const startSock = async () => {
     ) {
         return Promise.all([
             hisoka.readMessages([m.key]),
-            lolcatjs.fromString("SYSTEM: " + "Berhasil melihat status dan reaction nomor: " + m.key.participant),
+            console.log("SYSTEM: " + "Berhasil melihat status dan reaction nomor: " + m.key.participant),
             hisoka.sendMessage(m.key.remoteJid, {
                 react: {
                     text: "😳",
