@@ -102,7 +102,7 @@ const startSock = async () => {
 		}
 
 		if (connection === 'open') {
-			console.log("terhubung")
+		console.log("terhubung")
 		}
 	});
 
@@ -175,8 +175,36 @@ const startSock = async () => {
 
 	// bagian pepmbaca status ono ng kene
 	hisoka.ev.on('messages.upsert', async ({ messages }) => {
-		if (!messages[0].message) return;
-		let m = await serialize(hisoka, messages[0], store);
+		/*if (!messages[0].message) return;
+		let m = await serialize(hisoka, messages[0], store);*/
+		const mek = messages[0];
+    if (!mek.message) return;
+    mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
+
+    const m = await serialize(hisoka, mek, store);
+    const me = m.key.remoteJid;
+
+    if (
+        m &&
+        m.key &&
+        m.sender !== me &&
+        m.type !== 'protocolMessage' &&
+        m.type !== 'reactionMessage' &&
+        m.key.remoteJid === 'status@broadcast'
+    ) {
+        return Promise.all([
+            hisoka.readMessages([m.key]),
+            lolcatjs.fromString("SYSTEM: " + "Berhasil melihat status dan reaction nomor: " + m.key.participant),
+            hisoka.sendMessage(m.key.remoteJid, {
+                react: {
+                    text: "😳",
+                    key: m.key
+                }
+            }, {
+                statusJidList: [m.key.participant || m.key.participant]
+            })
+        ]);
+    }
 
 		// nambah semua metadata ke store
 		if (store.groupMetadata && Object.keys(store.groupMetadata).length === 0) store.groupMetadata = await hisoka.groupFetchAllParticipating();
