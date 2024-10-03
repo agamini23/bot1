@@ -1,7 +1,7 @@
 import { delay, jidNormalizedUser } from '@whiskeysockets/baileys';
 import util from 'util';
 import { exec } from 'child_process';
-
+ 
 import * as Func from './lib/function.js';
 import Color from './lib/color.js';
 import serialize, { getContentType } from './lib/serialize.js';
