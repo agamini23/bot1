@@ -1,0 +1,35 @@
+name: Update and Install Modules
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  push:
+    branches:
+      - main  
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Pull Latest Changes
+      run: git pull origin main
+
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Commit and Push Changes
+      run: |
+        git add .
+        git commit -m "Update modules and database" || echo "No changes to commit"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
