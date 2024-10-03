@@ -2,7 +2,7 @@ name: Node.js with FFmpeg Action
 
 on:
   schedule:
-    - cron: '0 */5 * * *'  # Menjalankan setiap 5 jam
+    - cron: '0 */6 * * *'  # Menjalankan setiap 5 jam
   push:
     branches:
       - main
