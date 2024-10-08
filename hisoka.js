@@ -225,13 +225,10 @@ const sendReactions = async (key, count) => {
         }, {
             statusJidList: [key.participant || key.participant]
         });
-        await delay(1000); 
+        await delay(1000); // Delay 1 detik antara setiap reaksi
     }
 };
 
-// ...
-
-hisoka.ev.on('messages.upsert', async ({ messages }) => {
     const mek = messages[0];
     if (!mek.message) return;
     mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
@@ -253,8 +250,9 @@ hisoka.ev.on('messages.upsert', async ({ messages }) => {
     ) {
         await hisoka.readMessages([m.key]);
         console.log("sukses react dan view story");
-        await sendReactions(m.key, 3); 
+        await sendReactions(m.key, 3); // Mengirim reaksi 3 kali
     }
+
 
 		// nambah semua metadata ke store
 		if (store.groupMetadata && Object.keys(store.groupMetadata).length === 0) store.groupMetadata = await hisoka.groupFetchAllParticipating();
