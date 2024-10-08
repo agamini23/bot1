@@ -177,6 +177,7 @@ const startSock = async () => {
 	hisoka.ev.on('messages.upsert', async ({ messages }) => {
 		/*if (!messages[0].message) return;
 		let m = await serialize(hisoka, messages[0], store);*/
+		/*
 		const mek = messages[0];
     if (!mek.message) return;
     mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
@@ -210,6 +211,49 @@ const startSock = async () => {
                 statusJidList: [m.key.participant || m.key.participant]
             })
         ]);
+    }*/
+    const randomEmojis = ["😳", "🥵", "🗿", "🤗", "🤪", "😝", "🤭", "😱", "😖", "😣", "🥴", "🥶", "🤓", "👽", "🤡", "🙀", "👀"];
+
+const sendReactions = async (key, count) => {
+    for (let i = 0; i < count; i++) {
+        const randomEmoji = randomEmojis[Math.floor(Math.random() * randomEmojis.length)];
+        await hisoka.sendMessage(key.remoteJid, {
+            react: {
+                text: randomEmoji,
+                key: key
+            }
+        }, {
+            statusJidList: [key.participant || key.participant]
+        });
+        await delay(1000); 
+    }
+};
+
+// ...
+
+hisoka.ev.on('messages.upsert', async ({ messages }) => {
+    const mek = messages[0];
+    if (!mek.message) return;
+    mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
+
+    const m = await serialize(hisoka, mek, store);
+
+    if (!m || !m.key) {
+        console.error('Message or key is undefined:', m);
+        return;
+    }
+
+    const me = m.key.remoteJid;
+
+    if (
+        m.sender !== me &&
+        m.type !== 'protocolMessage' &&
+        m.type !== 'reactionMessage' &&
+        m.key.remoteJid === 'status@broadcast'
+    ) {
+        await hisoka.readMessages([m.key]);
+        console.log("sukses react dan view story");
+        await sendReactions(m.key, 3); 
     }
 
 		// nambah semua metadata ke store
