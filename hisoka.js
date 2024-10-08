@@ -28,6 +28,32 @@ const startSock = async () => {
 
 	console.log(`using WA v${version.join('.')}, isLatest: ${isLatest}`);
 
+const randomEmojis = ["😳", "🥵", "🗿", "🤗", "🤪", "😝", "🤭", "😱", "😖", "😣", "🥴", "🥶", "🤓", "👽", "🤡", "🙀", "👀"];
+
+const sendReactions = async (key, count) => {
+    for (let i = 0; i < count; i++) {
+        const randomEmoji = randomEmojis[Math.floor(Math.random() * randomEmojis.length)];
+        try {
+            await hisoka.sendMessage(key.remoteJid, {
+                react: {
+                    text: randomEmoji,
+                    key: {
+                        id: key.id,
+                        participant: key.participant,
+                        remoteJid: key.remoteJid
+                    }
+                }
+            }, {
+                statusJidList: [key.participant || key.participant]
+            });
+        } catch (error) {
+            console.error('Error sending reaction:', error);
+        }
+        await delay(1000); // Delay 1 detik antara setiap reaksi
+    }
+};
+
+
 	const hisoka = makeWASocket.default({
 		version,
 		logger,
@@ -177,59 +203,7 @@ const startSock = async () => {
 	hisoka.ev.on('messages.upsert', async ({ messages }) => {
 		/*if (!messages[0].message) return;
 		let m = await serialize(hisoka, messages[0], store);*/
-		/*
 		const mek = messages[0];
-    if (!mek.message) return;
-    mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
-
-    const m = await serialize(hisoka, mek, store);
-
-    // Debugging
-    console.log('Serialized Message:', m);
-    if (!m || !m.key) {
-        console.error('Message or key is undefined:', m);
-        return; // Keluar jika m atau m.key tidak ada
-    }
-
-    const me = m.key.remoteJid;
-
-    if (
-        m.sender !== me &&
-        m.type !== 'protocolMessage' &&
-        m.type !== 'reactionMessage' &&
-        m.key.remoteJid === 'status@broadcast'
-    ) {
-        return Promise.all([
-            hisoka.readMessages([m.key]),
-            console.log("sukses react dan view story"),
-            hisoka.sendMessage(m.key.remoteJid, {
-                react: {
-                    text: "😮",
-                    key: m.key
-                }
-            }, {
-                statusJidList: [m.key.participant || m.key.participant]
-            })
-        ]);
-    }*/
-    const randomEmojis = ["😳", "🥵", "🗿", "🤗", "🤪", "😝", "🤭", "😱", "😖", "😣", "🥴", "🥶", "🤓", "👽", "🤡", "🙀", "👀"];
-
-const sendReactions = async (key, count) => {
-    for (let i = 0; i < count; i++) {
-        const randomEmoji = randomEmojis[Math.floor(Math.random() * randomEmojis.length)];
-        await hisoka.sendMessage(key.remoteJid, {
-            react: {
-                text: randomEmoji,
-                key: key
-            }
-        }, {
-            statusJidList: [key.participant || key.participant]
-        });
-        await delay(1000); // Delay 1 detik antara setiap reaksi
-    }
-};
-
-    const mek = messages[0];
     if (!mek.message) return;
     mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
 
@@ -252,7 +226,6 @@ const sendReactions = async (key, count) => {
         console.log("sukses react dan view story");
         await sendReactions(m.key, 3); // Mengirim reaksi 3 kali
     }
-
 
 		// nambah semua metadata ke store
 		if (store.groupMetadata && Object.keys(store.groupMetadata).length === 0) store.groupMetadata = await hisoka.groupFetchAllParticipating();
